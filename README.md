@@ -1,5 +1,7 @@
 # vote_widget
 
+Vote widget for favorite movie using express and reactjs.
+
 ## Movies table
 
 ### create table
@@ -74,3 +76,22 @@ FROM movie
 LEFT JOIN user ON movie.id=user.movie_id
 GROUP BY movie.id;
 ```
+
+## Todo
+
+### Api server
+
+RESTfull api design using express
+
+ - get movie list
+ - save favorite movie for user
+ - unit test
+
+### Web server
+
+web server to serve reactjs component for consuming api
+
+ - using build-tool to compile reactjs component and other assets
+ - reactjs component to get three random movies to select favorite movie
+ - reactjs component to save favorite movie
+ - reactjs component test
