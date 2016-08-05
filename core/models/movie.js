@@ -78,3 +78,19 @@ exports.deleteById = function(id) {
     });
   });
 };
+
+exports.findCandidateMovies = function() {
+  return Promise.using(db(), function(connection) {
+    return connection.queryAsync('SELECT COUNT(id) AS count FROM movie')
+    .then(function(totalCount) {
+      var selectedOffsets = _.sample(_.range(totalCount[0].count), 3);
+      var promises = _.map(selectedOffsets, function(offset) {
+        return connection.queryAsync('SELECT * FROM movie LIMIT 1 OFFSET ?', [offset]);
+      });
+      return Promise.all(promises)
+      .then(function(result) {
+        return _.flatten(result);
+      });
+    });
+  });
+};

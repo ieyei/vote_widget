@@ -84,3 +84,19 @@ exports.deleteById = function(id) {
     });
   });
 };
+
+exports.saveFavoriteMovie = function (userId, movieId) {
+  return Promise.using(db(), function(connection) {
+    return connection.queryAsync('UPDATE user SET movie_id=? WHERE id=?', [movieId, userId])
+    .then(function(result) {
+      if (result.changedRows === 0) {
+        throw ec.BadRequest('invalid user id');
+      }
+
+      return { user_id: userId, movie_id: movieId };
+    })
+    .catch(function(error) {
+      throw ec.BadRequest(error.message);
+    });
+  });
+};
