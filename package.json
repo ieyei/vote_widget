@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "bin/api.js",
-    "test": "jshint .;mocha test/**"
+    "test": "jshint .;mocha test/**",
+    "db:init": "bin/initializeDb.js",
+    "db:dummy": "bin/insertDummy.js"
   },
   "repository": {
     "type": "git",
@@ -20,7 +22,8 @@
   "dependencies": {
     "bluebird": "^3.4.1",
     "express": "^4.14.0",
-    "mysql": "^2.11.1"
+    "mysql": "^2.11.1",
+    "underscore": "^1.8.3"
   },
   "devDependencies": {
     "jshint": "^2.9.2",
