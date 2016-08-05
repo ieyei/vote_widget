@@ -3,24 +3,25 @@
 var _ = require('underscore');
 var Promise = require('bluebird');
 var db = require('../common/db');
+var ec = require('../common/errorCode');
 
 function validate(value) {
   return Promise.try(function() {
     var requireField = [ 'name' ];
     _.each(requireField, function(fieldName) {
       if (!_.has(value, fieldName)) {
-        throw new Error('Invalid user schema');
+        throw ec.BadRequest('Invalid user schema');
       }
     });
 
     if (_.has(value, 'movie_id')) {
       if (!_.isNumber(value.movie_id)) {
-        throw new Error('Invalid user schema');
+        throw ec.BadRequest('Invalid user schema');
       }
     }
 
     if (!_.isString(value.name)) {
-      throw new Error('Invalid user schema');
+      throw ec.BadRequest('Invalid user schema');
     }
 
     return _.pick(value, 'name', 'movie_id');
@@ -30,16 +31,12 @@ function validate(value) {
 exports.findAll = function () {
   return Promise.using(db(), function(connection) {
     return connection.queryAsync('SELECT * FROM user');
-  }).catch(function(error) {
-    console.error(error);
   });
 };
 
 exports.findById = function (id) {
   return Promise.using(db(), function(connection) {
     return connection.queryAsync('SELECT * FROM user WHERE id=?', [id]);
-  }).catch(function(error) {
-    console.error(error);
   });
 };
 
@@ -48,8 +45,6 @@ exports.insert = function (user) {
   .then(function(validatedUser) {
     return Promise.using(db(), function(connection) {
       return connection.queryAsync('INSERT INTO user SET ?', validatedUser);
-    }).catch(function(error) {
-      console.error(error);
     });
   });
 };
@@ -58,17 +53,27 @@ exports.updateById = function (id, user) {
   return validate(user)
   .then(function(validatedUser) {
     return Promise.using(db(), function(connection) {
-      return connection.queryAsync('UPDATE user SET ? WHERE id=?', [validatedUser, id]);
-    }).catch(function(error) {
-      console.error(error);
+      return connection.queryAsync('UPDATE user SET ? WHERE id=?', [validatedUser, id])
+      .then(function(result) {
+        if (result.changedRows === 0) {
+          throw ec.NotFound();
+        }
+
+        return _.extend({ id: id }, validatedUser);
+      });
     });
   });
 };
 
 exports.deleteById = function(id) {
   return Promise.using(db(), function(connection) {
-    return connection.queryAsync('DELETE FROM user WHERE id=?', [id]);
-  }).catch(function(error) {
-    console.error(error);
+    return connection.queryAsync('DELETE FROM user WHERE id=?', [id])
+    .then(function(result) {
+      if (result.affectedRows === 0) {
+        throw ec.NotFound();
+      }
+
+      return { deletedId: id };
+    });
   });
 };
