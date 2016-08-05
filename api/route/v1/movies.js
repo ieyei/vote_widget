@@ -11,31 +11,39 @@ router.get('/movies', function(req, res) {
   });
 });
 
-router.post('/movies', function(req, res) {
+router.post('/movies', function(req, res, next) {
   return Movie.insert(req.body)
   .then(function(result) {
     res.json({ insertId: result.insertId });
+  }).catch(function(error) {
+    next(error);
   });
 });
 
-router.get('/movies/:id', function(req, res) {
+router.get('/movies/:id', function(req, res, next) {
   return Movie.findById(req.params.id)
   .then(function(result) {
     res.json(result[0]);
+  }).catch(function(error) {
+    next(error);
   });
 });
 
-router.put('/movies/:id', function(req, res) {
+router.put('/movies/:id', function(req, res, next) {
   return Movie.updateById(req.params.id, req.body)
   .then(function(result) {
     res.json(result);
+  }).catch(function(error) {
+    next(error);
   });
 });
 
-router.delete('/movies/:id', function(req, res) {
+router.delete('/movies/:id', function(req, res, next) {
   return Movie.deleteById(req.params.id)
   .then(function(result) {
     res.json(result);
+  }).catch(function(error) {
+    next(error);
   });
 });
 

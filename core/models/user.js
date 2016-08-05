@@ -36,7 +36,14 @@ exports.findAll = function () {
 
 exports.findById = function (id) {
   return Promise.using(db(), function(connection) {
-    return connection.queryAsync('SELECT * FROM user WHERE id=?', [id]);
+    return connection.queryAsync('SELECT * FROM user WHERE id=?', [id])
+    .then(function(result) {
+      if (_.isEmpty(result)) {
+        throw ec.NotFound();
+      }
+
+      return result;
+    });
   });
 };
 

@@ -29,30 +29,59 @@ describe('users', function() {
       })
       .expect(200, done);
     });
-    it('should fail to create user with invalid schema');
+
+    it('should fail to create user with invalid schema', function(done) {
+      request(app)
+      .post('/v1/users')
+      .set('Accept', 'application/json')
+      .send({ invald: 'post' })
+      .expect(400, done);
+    });
   });
 
   describe('put', function() {
-    it('should succeed to update user', function(done) {
+    var id;
+    before(function(done) {
       request(app)
       .post('/v1/users')
       .set('Accept', 'application/json')
       .send({ name: 'post' })
       .end(function(err, res) {
         if (err) {
-          throw new Error('Fail movie post');
+          throw new Error('Fail user post');
         }
 
-        request(app)
-        .put('/v1/users/' + res.body.insertId)
-        .set('Accept', 'application/json')
-        .send({ name: 'put' })
-        .expect('Content-Type', /json/)
-        .expect(200, done);
+        id = res.body.insertId;
+        done();
       });
     });
-    it('should fail to update user with invalid schema');
-    it('should fail to update user if not exist user id');
+
+    it('should succeed to update user', function(done) {
+      request(app)
+      .put('/v1/users/' + id)
+      .set('Accept', 'application/json')
+      .send({ name: 'put' })
+      .expect('Content-Type', /json/)
+      .expect(200, done);
+    });
+
+    it('should fail to update user with invalid schema', function(done) {
+      request(app)
+      .put('/v1/users/' + id)
+      .set('Accept', 'application/json')
+      .send({ invalid: 'put' })
+      .expect('Content-Type', /json/)
+      .expect(400, done);
+    });
+
+    it('should fail to update user if not exist user id', function(done) {
+      request(app)
+      .put('/v1/users/' + 'invalidId')
+      .set('Accept', 'application/json')
+      .send({ name: 'put' })
+      .expect('Content-Type', /json/)
+      .expect(404, done);
+    });
   });
 
   describe('delete', function() {
@@ -63,7 +92,7 @@ describe('users', function() {
       .send({ name: 'post' })
       .end(function(err, res) {
         if (err) {
-          throw new Error('Fail movie post');
+          throw new Error('Fail user post');
         }
 
         request(app)
@@ -73,6 +102,13 @@ describe('users', function() {
         .expect(200, done);
       });
     });
-    it('should fail to delete user if not exist user id');
+
+    it('should fail to delete user if not exist user id', function(done) {
+      request(app)
+      .delete('/v1/users/' + 'invalidId')
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(404, done);
+    });
   });
 });
