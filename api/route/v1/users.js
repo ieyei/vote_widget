@@ -23,7 +23,7 @@ router.post('/users', function(req, res, next) {
 router.get('/users/:id', function(req, res, next) {
   return User.findById(req.params.id)
   .then(function(result) {
-    res.json(result[0]);
+    res.json(result);
   }).catch(function(error) {
     next(error);
   });

@@ -36,7 +36,7 @@ exports.findById = function (id) {
         throw ec.NotFound();
       }
 
-      return result;
+      return result[0];
     });
   });
 };

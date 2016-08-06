@@ -3,7 +3,7 @@
 var request = require('supertest');
 var app = require('../../api/app');
 
-describe('votes', function() {
+describe('/votes', function() {
   describe('get', function() {
     it('should succeed to get three random movie list for vote', function(done) {
       request(app)

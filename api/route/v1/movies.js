@@ -23,7 +23,7 @@ router.post('/movies', function(req, res, next) {
 router.get('/movies/:id', function(req, res, next) {
   return Movie.findById(req.params.id)
   .then(function(result) {
-    res.json(result[0]);
+    res.json(result);
   }).catch(function(error) {
     next(error);
   });

@@ -1,10 +1,11 @@
 'use strict';
 
 var _ = require('underscore');
+var assert = require('assert');
 var request = require('supertest');
 var app = require('../../api/app');
 
-describe('movies', function() {
+describe('/movies', function() {
   describe('get', function() {
     it('should succeed to get movies list', function(done) {
       request(app)
@@ -22,11 +23,6 @@ describe('movies', function() {
       .set('Accept', 'application/json')
       .send({ title: 'post', director_name: 'post', summary: 'post' })
       .expect('Content-Type', /json/)
-      .expect(function(res) {
-        if (!_.has(res.body, 'insertId') || !_.isNumber(res.body.insertId)) {
-          throw new Error('Missing insertId');
-        }
-      })
       .expect(200, done);
     });
 
@@ -47,10 +43,7 @@ describe('movies', function() {
       .set('Accept', 'application/json')
       .send({ title: 'post', director_name: 'post', summary: 'post' })
       .end(function(err, res) {
-        if (err) {
-          throw new Error('Fail movie post');
-        }
-
+        assert.equal(_.isError(err), false);
         id = res.body.insertId;
         done();
       });
@@ -91,9 +84,7 @@ describe('movies', function() {
       .set('Accept', 'application/json')
       .send({ title: 'post', director_name: 'post', summary: 'post' })
       .end(function(err, res) {
-        if (err) {
-          throw new Error('Fail movie post');
-        }
+        assert.equal(_.isError(err), false);
 
         request(app)
         .delete('/v1/movies/' + res.body.insertId)

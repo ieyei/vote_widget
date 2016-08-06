@@ -1,10 +1,11 @@
 'use strict';
 
 var _ = require('underscore');
+var assert = require('assert');
 var request = require('supertest');
 var app = require('../../api/app');
 
-describe('users', function() {
+describe('/users', function() {
   describe('get', function() {
     it('should succeed to get users list', function(done) {
       request(app)
@@ -22,11 +23,6 @@ describe('users', function() {
       .set('Accept', 'application/json')
       .send({ name: 'post' })
       .expect('Content-Type', /json/)
-      .expect(function(res) {
-        if (!_.has(res.body, 'insertId') || !_.isNumber(res.body.insertId)) {
-          throw new Error('Missing insertId');
-        }
-      })
       .expect(200, done);
     });
 
@@ -47,9 +43,7 @@ describe('users', function() {
       .set('Accept', 'application/json')
       .send({ name: 'post' })
       .end(function(err, res) {
-        if (err) {
-          throw new Error('Fail user post');
-        }
+        assert.equal(_.isError(err), false);
 
         id = res.body.insertId;
         done();
@@ -91,9 +85,7 @@ describe('users', function() {
       .set('Accept', 'application/json')
       .send({ name: 'post' })
       .end(function(err, res) {
-        if (err) {
-          throw new Error('Fail user post');
-        }
+        assert.equal(_.isError(err), false);
 
         request(app)
         .delete('/v1/users/' + res.body.insertId)
