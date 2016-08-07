@@ -14,3 +14,11 @@ exports.BadRequest = function(message) {
 
   return err;
 };
+
+exports.UnprocessableEntity = function(message) {
+  var err = new Error('Unprocessable Entity');
+  err.status = 422;
+  err.message = message;
+
+  return err;
+};

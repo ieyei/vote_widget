@@ -20,7 +20,9 @@ app.use(function(req, res, next) {
 });
 
 app.use(function(err, req, res, next) {
-  if (err !== 404 && !/node-superagent/.test(req.headers['user-agent'])) {
+  var isTest = /node-superagent/.test(req.headers['user-agent']);
+
+  if (err !== 404 && !isTest) {
     console.error('response error with ', { err: err });
     console.error(err.stack);
   }

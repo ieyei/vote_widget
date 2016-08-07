@@ -14,11 +14,22 @@ function validate(value) {
       }
 
       if (!_.isString(value[fieldName])) {
-        throw ec.BadRequest('Invalid movie schema');
+        throw ec.UnprocessableEntity('Invalid movie schema');
       }
     });
 
     return _.pick(value, requireField);
+  });
+}
+
+function validateIdType(id) {
+  return Promise.try(function() {
+    var parsed = parseInt(id);
+    if (_.isNaN(parsed)) {
+      throw ec.BadRequest('Invalid movie id');
+    }
+
+    return parsed;
   });
 }
 
@@ -29,14 +40,17 @@ exports.findAll = function () {
 };
 
 exports.findById = function (id) {
-  return Promise.using(db(), function(connection) {
-    return connection.queryAsync('SELECT * FROM movie WHERE id=?', [id])
-    .then(function(result) {
-      if (_.isEmpty(result)) {
-        throw ec.NotFound();
-      }
+  return validateIdType(id)
+  .then(function(parsedId) {
+    return Promise.using(db(), function(connection) {
+      return connection.queryAsync('SELECT * FROM movie WHERE id=?', [parsedId])
+      .then(function(result) {
+        if (_.isEmpty(result)) {
+          throw ec.NotFound();
+        }
 
-      return result[0];
+        return result[0];
+      });
     });
   });
 };
@@ -51,30 +65,36 @@ exports.insert = function (movie) {
 };
 
 exports.updateById = function (id, movie) {
-  return validate(movie)
-  .then(function(validatedMovie) {
-    return Promise.using(db(), function(connection) {
-      return connection.queryAsync('UPDATE movie SET ? WHERE id=?', [validatedMovie, id])
-      .then(function(result) {
-        if (result.changedRows === 0) {
-          throw ec.NotFound();
-        }
+  return validateIdType(id)
+  .then(function(parsedId) {
+    return validate(movie)
+    .then(function(validatedMovie) {
+      return Promise.using(db(), function(connection) {
+        return connection.queryAsync('UPDATE movie SET ? WHERE id=?', [validatedMovie, parsedId])
+        .then(function(result) {
+          if (result.changedRows === 0) {
+            throw ec.NotFound();
+          }
 
-        return _.extend({ id: id }, validatedMovie);
+          return _.extend({ id: parsedId }, validatedMovie);
+        });
       });
     });
   });
 };
 
 exports.deleteById = function(id) {
-  return Promise.using(db(), function(connection) {
-    return connection.queryAsync('DELETE FROM movie WHERE id=?', [id])
-    .then(function(result) {
-      if (result.affectedRows === 0) {
-        throw ec.NotFound();
-      }
+  return validateIdType(id)
+  .then(function(parsedId) {
+    return Promise.using(db(), function(connection) {
+      return connection.queryAsync('DELETE FROM movie WHERE id=?', [parsedId])
+      .then(function(result) {
+        if (result.affectedRows === 0) {
+          throw ec.NotFound();
+        }
 
-      return { deletedId: id };
+        return { deletedId: parsedId };
+      });
     });
   });
 };

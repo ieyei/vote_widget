@@ -14,7 +14,8 @@ router.get('/users', function(req, res) {
 router.post('/users', function(req, res, next) {
   return User.insert(req.body)
   .then(function(result) {
-    res.json({ insertId: result.insertId });
+    res.location('/users/' + result.insertId);
+    res.status(201).json();
   }).catch(function(error) {
     next(error);
   });
@@ -31,8 +32,8 @@ router.get('/users/:id', function(req, res, next) {
 
 router.put('/users/:id', function(req, res, next) {
   return User.updateById(req.params.id, req.body)
-  .then(function(result) {
-    res.json(result);
+  .then(function() {
+    res.status(205).json();
   }).catch(function(error) {
     next(error);
   });
@@ -40,8 +41,8 @@ router.put('/users/:id', function(req, res, next) {
 
 router.delete('/users/:id', function(req, res, next) {
   return User.deleteById(req.params.id)
-  .then(function(result) {
-    res.json(result);
+  .then(function() {
+    res.status(204).json();
   }).catch(function(error) {
     next(error);
   });
