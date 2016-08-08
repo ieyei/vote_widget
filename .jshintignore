@@ -6,3 +6,4 @@ bin
 web/build/**
 web/dev/**
 web/dist/**
+test/web/component/**
