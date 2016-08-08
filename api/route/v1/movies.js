@@ -14,7 +14,8 @@ router.get('/movies', function(req, res) {
 router.post('/movies', function(req, res, next) {
   return Movie.insert(req.body)
   .then(function(result) {
-    res.json({ insertId: result.insertId });
+    res.location('/movies/' + result.insertId);
+    res.status(201).json();
   }).catch(function(error) {
     next(error);
   });
@@ -23,7 +24,7 @@ router.post('/movies', function(req, res, next) {
 router.get('/movies/:id', function(req, res, next) {
   return Movie.findById(req.params.id)
   .then(function(result) {
-    res.json(result[0]);
+    res.json(result);
   }).catch(function(error) {
     next(error);
   });
@@ -31,8 +32,8 @@ router.get('/movies/:id', function(req, res, next) {
 
 router.put('/movies/:id', function(req, res, next) {
   return Movie.updateById(req.params.id, req.body)
-  .then(function(result) {
-    res.json(result);
+  .then(function() {
+    res.status(205).json();
   }).catch(function(error) {
     next(error);
   });
@@ -40,8 +41,8 @@ router.put('/movies/:id', function(req, res, next) {
 
 router.delete('/movies/:id', function(req, res, next) {
   return Movie.deleteById(req.params.id)
-  .then(function(result) {
-    res.json(result);
+  .then(function() {
+    res.status(204).json();
   }).catch(function(error) {
     next(error);
   });

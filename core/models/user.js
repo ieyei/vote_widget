@@ -16,15 +16,26 @@ function validate(value) {
 
     if (_.has(value, 'movie_id')) {
       if (!_.isNumber(value.movie_id)) {
-        throw ec.BadRequest('Invalid user schema');
+        throw ec.UnprocessableEntity('Invalid user schema');
       }
     }
 
     if (!_.isString(value.name)) {
-      throw ec.BadRequest('Invalid user schema');
+      throw ec.UnprocessableEntity('Invalid user schema');
     }
 
     return _.pick(value, 'name', 'movie_id');
+  });
+}
+
+function validateIdType(id) {
+  return Promise.try(function() {
+    var parsed = parseInt(id);
+    if (_.isNaN(parsed)) {
+      throw ec.BadRequest('Invalid movie id');
+    }
+
+    return parsed;
   });
 }
 
@@ -35,14 +46,17 @@ exports.findAll = function () {
 };
 
 exports.findById = function (id) {
-  return Promise.using(db(), function(connection) {
-    return connection.queryAsync('SELECT * FROM user WHERE id=?', [id])
-    .then(function(result) {
-      if (_.isEmpty(result)) {
-        throw ec.NotFound();
-      }
+  return validateIdType(id)
+  .then(function(parsedId) {
+    return Promise.using(db(), function(connection) {
+      return connection.queryAsync('SELECT * FROM user WHERE id=?', [parsedId])
+      .then(function(result) {
+        if (_.isEmpty(result)) {
+          throw ec.NotFound();
+        }
 
-      return result;
+        return result[0];
+      });
     });
   });
 };
@@ -57,46 +71,59 @@ exports.insert = function (user) {
 };
 
 exports.updateById = function (id, user) {
-  return validate(user)
-  .then(function(validatedUser) {
-    return Promise.using(db(), function(connection) {
-      return connection.queryAsync('UPDATE user SET ? WHERE id=?', [validatedUser, id])
-      .then(function(result) {
-        if (result.changedRows === 0) {
-          throw ec.NotFound();
-        }
+  return validateIdType(id)
+  .then(function(parsedId) {
+    return validate(user)
+    .then(function(validatedUser) {
+      return Promise.using(db(), function(connection) {
+        return connection.queryAsync('UPDATE user SET ? WHERE id=?', [validatedUser, parsedId])
+        .then(function(result) {
+          if (result.changedRows === 0) {
+            throw ec.NotFound();
+          }
 
-        return _.extend({ id: id }, validatedUser);
+          return _.extend({ id: parsedId }, validatedUser);
+        });
       });
     });
   });
 };
 
 exports.deleteById = function(id) {
-  return Promise.using(db(), function(connection) {
-    return connection.queryAsync('DELETE FROM user WHERE id=?', [id])
-    .then(function(result) {
-      if (result.affectedRows === 0) {
-        throw ec.NotFound();
-      }
+  return validateIdType(id)
+  .then(function(parsedId) {
+    return Promise.using(db(), function(connection) {
+      return connection.queryAsync('DELETE FROM user WHERE id=?', [parsedId])
+      .then(function(result) {
+        if (result.affectedRows === 0) {
+          throw ec.NotFound();
+        }
 
-      return { deletedId: id };
+        return { deletedId: parsedId };
+      });
     });
   });
 };
 
 exports.saveFavoriteMovie = function (userId, movieId) {
-  return Promise.using(db(), function(connection) {
-    return connection.queryAsync('UPDATE user SET movie_id=? WHERE id=?', [movieId, userId])
-    .then(function(result) {
-      if (result.changedRows === 0) {
-        throw ec.BadRequest('invalid user id');
-      }
+  return Promise.props({
+    userId: validateIdType(userId),
+    movieId: validateIdType(movieId)
+  }).then(function(parsed) {
+    return Promise.using(db(), function(connection) {
+      return connection.queryAsync('UPDATE user SET movie_id=? WHERE id=?', [
+        parsed.movieId, parsed.userId
+      ])
+      .then(function(result) {
+        if (result.changedRows === 0) {
+          throw ec.BadRequest('invalid user id');
+        }
 
-      return { user_id: userId, movie_id: movieId };
-    })
-    .catch(function(error) {
-      throw ec.BadRequest(error.message);
+        return { user_id: parsed.userId, movie_id: parsed.movieId };
+      })
+      .catch(function(error) {
+        throw ec.BadRequest(error.message);
+      });
     });
   });
 };
