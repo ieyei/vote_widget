@@ -1,0 +1,34 @@
+{
+  "name": "vote_widget",
+  "version": "1.0.0",
+  "description": "vote your favorite movie",
+  "main": "index.js",
+  "scripts": {
+    "start": "bin/api.js",
+    "test": "jshint .;mocha test/**",
+    "db:init": "bin/initializeDb.js",
+    "db:dummy": "bin/insertDummy.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maeltm/vote_widget.git"
+  },
+  "author": "Catstail <maeltm18@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/maeltm/vote_widget/issues"
+  },
+  "homepage": "https://github.com/maeltm/vote_widget#readme",
+  "dependencies": {
+    "bluebird": "^3.4.1",
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "mysql": "^2.11.1",
+    "underscore": "^1.8.3"
+  },
+  "devDependencies": {
+    "jshint": "^2.9.2",
+    "mocha": "^3.0.0",
+    "supertest": "^2.0.0"
+  }
+}
