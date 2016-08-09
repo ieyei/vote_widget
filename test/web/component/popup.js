@@ -10,17 +10,15 @@ var Modal = ReactBootstrap.Modal;
 var Popup = require('../../../web/dev/js/component/popup');
 
 describe('<Popup />', function() {
-  it('renders a <Modal />', function(done) {
+  it('renders a <Modal />', function() {
     var wrapper = shallow(<Popup title="title" content="content" goto="goto" />);
     assert.equal(wrapper.find(Modal).length, 1);
-    done();
   });
 
-  it('renders a <Modal.Header />, a <Modal.Body /> and a <Modal.Footer />', function(done) {
+  it('renders a <Modal.Header />, a <Modal.Body /> and a <Modal.Footer />', function() {
     var wrapper = shallow(<Popup title="title" content="content" goto="goto" />);
     assert.equal(wrapper.find(Modal.Header).length, 1);
     assert.equal(wrapper.find(Modal.Body).length, 1);
     assert.equal(wrapper.find(Modal.Footer).length, 1);
-    done();
   });
 });

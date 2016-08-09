@@ -7,19 +7,17 @@ var shallow = require('enzyme').shallow;
 var App = require('../../../web/dev/js/component/app');
 
 describe('<App />', function() {
-  it('renders an `#content`', function(done) {
+  it('renders an `#content`', function() {
     var wrapper = shallow(<App />);
     assert.equal(wrapper.find('#content').length, 1);
-    done();
   });
 
-  it('renders children when passed in', function(done) {
+  it('renders children when passed in', function() {
     var wrapper = shallow(
       <App>
         <div className="unique" />
       </App>
     );
     assert.equal(wrapper.contains(<div className="unique" />), true);
-    done();
   });
 });

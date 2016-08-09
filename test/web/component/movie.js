@@ -11,12 +11,11 @@ var Col = ReactBootstrap.Col;
 var Movie = require('../../../web/dev/js/component/movie');
 
 describe('<Movie />', function() {
-  it('allows us to set props', function(done) {
-    var onClick = sinon.spy();
+  it('allows us to set props', function() {
     var wrapper = mount(
       <Movie
         movieId={1}
-        onClick={onClick}
+        onClick={()=>{}}
         title="title"
         panelStyle="default"
         director_name="director_name"
@@ -26,10 +25,9 @@ describe('<Movie />', function() {
     assert.equal(wrapper.props().title, 'title');
     wrapper.setProps({ summary: 'foo' });
     assert.equal(wrapper.props().summary, 'foo');
-    done();
   });
 
-  it('simulates click events', function(done) {
+  it('simulates click events', function() {
     var onClick = sinon.spy();
     var wrapper = mount(
       <Movie
@@ -43,6 +41,5 @@ describe('<Movie />', function() {
     );
     wrapper.find(Col).simulate('click');
     assert.equal(onClick.callCount, 1);
-    done();
   });
 });

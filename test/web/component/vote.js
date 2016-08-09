@@ -12,19 +12,17 @@ var Movie = require('../../../web/dev/js/component/movie');
 var Popup = require('../../../web/dev/js/component/popup');
 
 describe('<Vote />', function() {
-  it('renders an `.modal-container`', function(done) {
+  it('renders an `.modal-container`', function() {
     var wrapper = shallow(<Vote />);
     assert.equal(wrapper.find('.modal-container').length, 1);
-    done();
   });
 
-  it('renders one <Input /> component', function(done) {
+  it('renders one <Input /> component', function() {
     var wrapper = shallow(<Vote />);
     assert.equal(wrapper.find(Input).length, 1);
-    done();
   });
 
-  it('renders three <Movie /> components after getCandidateMovies', function(done) {
+  it('renders three <Movie /> components after getCandidateMovies', function() {
     sinon.stub(require('jquery'), 'ajax', function(url, options) {
       if (/votes/.test(url) && options.method === 'GET') {
         options.success([
@@ -36,12 +34,10 @@ describe('<Vote />', function() {
     });
     var wrapper = mount(<Vote />);
     assert.equal(wrapper.find(Movie).length, 3);
-    done();
   });
 
-  it('renders one <Popup /> component', function(done) {
+  it('renders one <Popup /> component', function() {
     var wrapper = shallow(<Vote />);
     assert.equal(wrapper.find(Popup).length, 1);
-    done();
   });
 });

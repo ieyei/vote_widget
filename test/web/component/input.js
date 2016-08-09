@@ -14,31 +14,26 @@ var FormControl = ReactBootstrap.FormControl;
 var ControlLabel = ReactBootstrap.ControlLabel;
 
 describe('<Input />', function() {
-  it('renders a `<form>`', function(done) {
-    var getValidationState = sinon.spy();
-    var onChange = sinon.spy();
+  it('renders a `<form>`', function() {
     var wrapper = shallow(
       <Input
         controlId="userId"
-        validationState={getValidationState}
-        onChange={onChange}
+        validationState={()=>{}}
+        onChange={()=>{}}
         label="User Id"
         type="number"
         placeholder="Enter Your Id"
         ref="userId"
       />);
     assert.equal(wrapper.find('form').length, 1);
-    done();
   });
 
-  it('renders a FormGroup, a ControlLabel and a FormControl', function(done) {
-    var getValidationState = sinon.spy();
-    var onChange = sinon.spy();
+  it('renders a FormGroup, a ControlLabel and a FormControl', function() {
     var wrapper = shallow(
       <Input
         controlId="userId"
-        validationState={getValidationState}
-        onChange={onChange}
+        validationState={()=>{}}
+        onChange={()=>{}}
         label="User Id"
         type="number"
         placeholder="Enter Your Id"
@@ -47,10 +42,9 @@ describe('<Input />', function() {
     assert.equal(wrapper.find(FormGroup).length, 1);
     assert.equal(wrapper.find(ControlLabel).length, 1);
     assert.equal(wrapper.find(FormControl).length, 1);
-    done();
   });
 
-  it('simulates change events', function(done) {
+  it('simulates change events', function() {
     var getValidationState = sinon.spy();
     var onChange = sinon.spy();
     var wrapper = mount(
@@ -67,6 +61,5 @@ describe('<Input />', function() {
     wrapper.find(FormControl).simulate('change', { target: { value: 20 } } );
     assert.equal(getValidationState.callCount, 2);
     assert.equal(onChange.callCount, 1);
-    done();
   })
 });
