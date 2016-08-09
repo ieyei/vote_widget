@@ -1,6 +1,7 @@
 'use strict';
 
 var bodyParser = require('body-parser');
+var cors = require('cors');
 var express = require('express');
 var ec = require('../core/common/errorCode');
 
@@ -10,6 +11,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: true
 }));
+
+app.use(cors());
 
 app.use('/v1', require('./route/v1/movies'));
 app.use('/v1', require('./route/v1/users'));
